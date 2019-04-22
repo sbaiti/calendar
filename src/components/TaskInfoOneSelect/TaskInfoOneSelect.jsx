@@ -16,28 +16,20 @@ class TaskInfoOneSelect extends React.Component {
   }
 
   render() {
-
     const {
       tasks,
       propertyLabel,
+      header,
       setScrollPos,
       scrollTop,
-      handleFilterChangeStart,
-      handleFilterChangeEnd,
       debouncedScrollController,
-      dateFormat,
-      duration,
-      optionShowDate,
-      fields,
-      unitDuration,
-      glyphicon,
       idGantt
     } = this.props;
 
     if (tasks.length >= 1) {
       return (
         <div className="task__info__container">
-          {TasksInfoHeader(handleFilterChangeStart, handleFilterChangeEnd, propertyLabel, duration, fields, unitDuration, glyphicon)}
+          {TasksInfoHeader(header)}
           <div
             className="tasks__info__wrapper"
             id={idGantt}
@@ -46,16 +38,12 @@ class TaskInfoOneSelect extends React.Component {
           >
             {tasks.map((task, index) => (
               <TaskItem
-                optionShowDate={optionShowDate}
                 idGantt={idGantt}
                 isSelected={task.id === this.state.selectedItemId}
                 handleSelectTask={() => { this.setState({ selectedItemId: task.id }); }}
                 task={task}
-                duration={duration}
-                unitDuration={unitDuration}
                 propertyLabel={propertyLabel}
                 key={index}
-                dateFormat={dateFormat}
                 setScrollPos={setScrollPos}
                 scrollTop={scrollTop}
               />
@@ -67,16 +55,15 @@ class TaskInfoOneSelect extends React.Component {
     }
     else {
       return (
-
         <div className="task__info__container">
-          {TasksInfoHeader(handleFilterChangeStart, handleFilterChangeEnd, propertyLabel, duration, fields, unitDuration, glyphicon)}
+          {TasksInfoHeader(header)}
           <div
             className="tasks__info__wrapper"
             id={idGantt}
             ref={this.taskInfoRef}
             onScroll={() => debouncedScrollController({ scrollSrc: 'GANTT_LIST' }, this.taskInfoRef)}
           >
-            <div className="filter__msg">NO EVENTS STILL AFTER FILTER !</div>
+            <div className="filter__msg">NO RESERVATION STILL AFTER FILTER !</div>
           </div>
         </div>
       );
@@ -86,18 +73,11 @@ class TaskInfoOneSelect extends React.Component {
 }
 TaskInfoOneSelect.propTypes = {
   tasks: PropTypes.array,
-  propertyLabel: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+  propertyLabel: PropTypes.string,
+  header: PropTypes.string,
   setScrollPos: PropTypes.func,
   scrollTop: PropTypes.number,
-  handleFilterChangeStart: PropTypes.func,
-  handleFilterChangeEnd: PropTypes.func,
   debouncedScrollController: PropTypes.func,
-  dateFormat: PropTypes.string,
-  duration: PropTypes.bool,
-  optionShowDate: PropTypes.string,
-  glyphicon: PropTypes.string,
-  idGantt: PropTypes.string,
-  fields: PropTypes.object,
-  unitDuration: PropTypes.string
+  idGantt: PropTypes.string
 };
 export default TaskInfoOneSelect;

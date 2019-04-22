@@ -24,7 +24,8 @@ export default class Bar {
         this.prepare_helpers();
     }
 
-    prepare_values(gantt) {
+    prepare_values() {
+        moment.locale();
         this.invalid = this.task.invalid;
         this.height = this.gantt.options.bar_height;
         if (this.gantt.options.view_mode === 'Month')
@@ -142,8 +143,8 @@ export default class Bar {
             'data-id': this.task.id,
             id: this.gantt.options.idGantt,
             name: this.task.name,
-            monthActiveStart: moment(this.task.start).locale(gantt.options.dateFormat).format('MMMM YYYY'),
-            monthActiveEnd: moment(this.task.end).locale(gantt.options.dateFormat).format('MMMM YYYY')
+            monthActiveStart: moment(this.task.start).format('MMMM YYYY'),
+            monthActiveEnd: moment(this.task.end).format('MMMM YYYY')
         });
         this.bar_group = createSVG('g', {
             class: 'bar-group',

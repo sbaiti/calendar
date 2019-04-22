@@ -71,6 +71,7 @@ export default class Gantt {
     }
 
     setup_tasks(tasks) {
+        moment.locale();
         let error = false;
         this.tasks = tasks.map((task, i) => {
             // convert to Date objects
@@ -81,8 +82,8 @@ export default class Gantt {
                 task.end = startt;
             }
 
-            task._start = moment(task.start).locale(this.options.dateFormat).toDate();
-            task._end = moment(task.end).locale(this.options.dateFormat).toDate();
+            task._start = moment(task.start).toDate();
+            task._end = moment(task.end).toDate();
 
             task._index = i;
             // dependencies
@@ -193,26 +194,28 @@ export default class Gantt {
     }
 
     setup_gantt_dates() {
+        moment.locale();
         this.gantt_start = this.tasks[0]._start;
         this.gantt_end = this.tasks[this.tasks.length - 1]._end;
         // add date padding on both sides
         if (this.view_is(['Hour', 'Quarter Day', 'Half Day'])) {
-            this.gantt_start = moment(this.gantt_start).subtract(5, 'days').locale(this.options.dateFormat).toDate();
-            this.gantt_end = moment(this.gantt_end).add(5, 'days').locale(this.options.dateFormat).toDate();
+            this.gantt_start = moment(this.gantt_start).subtract(5, 'days').toDate();
+            this.gantt_end = moment(this.gantt_end).add(5, 'days').toDate();
         } else if (this.view_is('Month')) {
-            this.gantt_start = moment(this.gantt_start).subtract(2, 'M').locale(this.options.dateFormat).toDate();
-            this.gantt_end = moment(this.gantt_end).add(4, 'M').locale(this.options.dateFormat).toDate();
+            this.gantt_start = moment(this.gantt_start).subtract(2, 'M').toDate();
+            this.gantt_end = moment(this.gantt_end).add(4, 'M').toDate();
         } else if (this.view_is('Year')) {
-            this.gantt_start = moment(this.gantt_start).subtract(5, 'Y').locale(this.options.dateFormat).toDate();
-            this.gantt_end = moment(this.gantt_end).add(5, 'Y').locale(this.options.dateFormat).toDate();
+            this.gantt_start = moment(this.gantt_start).subtract(5, 'Y').toDate();
+            this.gantt_end = moment(this.gantt_end).add(5, 'Y').toDate();
         }
         else {
-            this.gantt_start = moment(this.gantt_start).subtract(30, 'days').locale(this.options.dateFormat).toDate();
-            this.gantt_end = moment(this.gantt_end).add(30, 'days').locale(this.options.dateFormat).toDate();
+            this.gantt_start = moment(this.gantt_start).subtract(30, 'days').toDate();
+            this.gantt_end = moment(this.gantt_end).add(30, 'days').toDate();
         }
     }
 
     setup_date_values() {
+        moment.locale();
         this.dates = [];
         let cur_date = null;
 
@@ -221,12 +224,12 @@ export default class Gantt {
                 cur_date = this.gantt_start;
             } else
                 if (this.view_is('Year')) {
-                    cur_date = moment(cur_date).add(1, 'Y').locale(this.options.dateFormat).toDate();
+                    cur_date = moment(cur_date).add(1, 'Y').toDate();
                 }
                 else {
                     cur_date = this.view_is('Month') ?
-                        moment(cur_date).add(1, 'M').locale(this.options.dateFormat).toDate() :
-                        moment(cur_date).add(this.options.step, 'hours').locale(this.options.dateFormat).toDate();
+                        moment(cur_date).add(1, 'M').toDate() :
+                        moment(cur_date).add(this.options.step, 'hours').toDate();
                 }
             this.dates.push(cur_date);
         }
@@ -365,6 +368,7 @@ export default class Gantt {
     // }
 
     make_grid_ticks() {
+        moment.locale();
         let tick_x = 0;
         let tick_y = this.options.padding / 2;
         let tick_height =
@@ -373,10 +377,10 @@ export default class Gantt {
         for (let date of this.dates) {
             let tick_class = 'tick';
             // thick tick for monday
-            if (this.view_is('Day') && moment(date).locale(this.options.dateFormat).format('DD') === '01') {
+            if (this.view_is('Day') && moment(date).format('DD') === '01') {
                 tick_class += ' thick';
             }
-            if (this.view_is('Hour') && moment(date).locale(this.options.dateFormat).format('HH') === '00') {
+            if (this.view_is('Hour') && moment(date).format('HH') === '00') {
                 tick_class += ' thick';
             }
             // thick tick for first week
@@ -483,8 +487,9 @@ export default class Gantt {
     }
 
     get_date_info(date, last_date, i) {
+        moment.locale();
         if (!last_date) {
-            last_date = moment(date).add(1, 'Y').locale(this.options.dateFormat).toDate();
+            last_date = moment(date).add(1, 'Y').toDate();
         }
         const date_text = {
             Hour_lower: moment(date).format('HH'),
@@ -493,26 +498,26 @@ export default class Gantt {
             Day_lower: (moment(date).format('DD') !== moment(last_date).format('DD')) ?
                 moment(date).format('DD') : '',
             Week_lower: moment(date).format('MM') !== moment(last_date).format('MM') ?
-                (moment(date).locale(this.options.dateFormat).format('DD MMMM')) : (moment(date).locale(this.options.dateFormat).format('DD')),
-            Month_lower: (moment(date).locale(this.options.dateFormat).format('MMMM YYYY')),
+                (moment(date).format('DD MMMM')) : (moment(date).format('DD')),
+            Month_lower: (moment(date).format('MMMM YYYY')),
             Hour_upper: (moment(date).format('DD') !== moment(last_date).format('DD')) ?
                 moment(date).format('MM') !== moment(last_date).format('MM') ?
-                    (moment(date).locale(this.options.dateFormat).format('DD MMMM')) :
-                    (moment(date).locale(this.options.dateFormat).format('DD MMMM')) +
+                    (moment(date).format('DD MMMM')) :
+                    (moment(date).format('DD MMMM')) +
                     ' ' +
-                    (moment(date).locale(this.options.dateFormat).format('YYYY')) : '',
+                    (moment(date).format('YYYY')) : '',
             'Quarter Day_upper': (moment(date).format('DD') !== moment(last_date).format('DD')) ?
-                (moment(date).locale(this.options.dateFormat).format('DD MMMM')) +
+                (moment(date).format('DD MMMM')) +
                 ' ' +
-                (moment(date).locale(this.options.dateFormat).format('YYYY')) : '',
+                (moment(date).format('YYYY')) : '',
             'Half Day_upper':
                 (moment(date).format('MM') === moment(last_date).format('MM') && i % 4 === 0) ?
-                    (moment(date).locale(this.options.dateFormat).format('DD MMMM YYYY')) : '',
+                    (moment(date).format('DD MMMM YYYY')) : '',
             Day_upper: (moment(date).format('MMMM') !== moment(last_date).format('MMMM') || (i == 2 && Number(moment(date).format('DD')) < 28)) ?
-                (moment(date).locale(this.options.dateFormat).format('MMMM YYYY')) : '',
+                (moment(date).format('MMMM YYYY')) : '',
             Week_upper: moment(date).format('MM') !== moment(last_date).format('MM') ?
-                (moment(date).locale(this.options.dateFormat).format('MMMM YYYY')) : '',
-            Year_lower: (moment(date).locale(this.options.dateFormat).format('YYYY'))
+                (moment(date).format('MMMM YYYY')) : '',
+            Year_lower: (moment(date).format('YYYY'))
             // Year_upper:
             //     date.getFullYear() !== last_date.getFullYear()
             //         ? date_utils.format(date, 'YYYY', this.options.language)

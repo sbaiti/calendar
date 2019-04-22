@@ -1,7 +1,5 @@
 import React from 'react';
-import DateFilterController from './filterUtile/DateFilterController';
 import { filter, reduce, keys, isEmpty, find, findIndex, omit, map } from 'lodash';
-import { Glyphicon } from 'react-bootstrap';
 import moment from 'moment';
 import { format, isAfter, isBefore, compareAsc, compareDesc, areRangesOverlapping, differenceInMinutes } from 'date-fns';
 
@@ -40,7 +38,6 @@ function prepareTasks(dataProvider, fields) {
             }, {}
         );
 
-
         if (keys(transformedItem).length > 0) {
             return [...acc, {
                 ...transformedItem,
@@ -56,6 +53,7 @@ function prepareTasks(dataProvider, fields) {
 
 
 function transfromDataProviderToTasks(dataProvider, fields) {
+    moment.locale();
     if (!fields) {
         console.error("Gantt couldn't be loaded. Please verify your fields");
         return null;
@@ -205,38 +203,10 @@ function FocusTask(task, month) {
     return month;
 }
 
-const TasksInfoHeader = (handleFilterChangeStart, handleFilterChangeEnd, propertyLabel, duration, fields, unitDuration, glyphicon) => (
+const TasksInfoHeader = (header) => (
     <div className="header__filter__container">
-        <div className="filter">
-            <DateFilterController
-                duration={duration}
-                unitDuration={unitDuration}
-                fields={fields}
-                handleFilterChangeStart={handleFilterChangeStart}
-                handleFilterChangeEnd={handleFilterChangeEnd}
-            />
-        </div>
-        <div className="task__item__header">
-            <div className="task__header__name">
-                <div className="Glyphicon__propertyLabel">
-                    <div className="Glyphicon__gantt">
-                        <Glyphicon glyph={glyphicon} />
-                    </div>
-                    <div>
-                        {propertyLabel ? propertyLabel[0] : ''}
-                    </div>
-                </div>
-            </div>
-            {duration ?
-                <div className="task__times__header">
-                    <div>{fields.labels ? fields.labels.start : ' ' + "Start"}</div>
-                    <div className="end__button">{fields.labels ? fields.labels.end : ' ' + "End"}</div>
-                    <div>{(fields.labels ? ' ' + fields.labels.dauer : ' ' + "Dauer") + `(${unitDuration && unitDuration !== '' ? unitDuration : 'h'})`}</div>
-                </div> :
-                <div className="task__times">
-                    <div>{fields.labels ? fields.labels.start : "Start"}</div>
-                    <div>{fields.labels ? fields.labels.end : "End"}</div>
-                </div>}
+        <div className="header">
+            <i>{header}</i>
         </div>
     </div>
 );

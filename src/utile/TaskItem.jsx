@@ -2,9 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
     SetClassName,
-    handleFacusTaskSelected,
-    dateFormatFn,
-    durationFN
+    handleFacusTaskSelected
 } from './utile';
 
 function TaskItem({
@@ -13,11 +11,7 @@ function TaskItem({
     setScrollPos,
     isSelected,
     handleSelectTask,
-    dateFormat,
-    idGantt,
-    optionShowDate,
-    duration,
-    unitDuration
+    idGantt
 }) {
     return (
         <div
@@ -30,25 +24,14 @@ function TaskItem({
             }}
         >
             <div id={task.id} className="task__name">
-                {propertyLabel ? task[propertyLabel[1]] : ''}
-            </div>
-            <div className="task__times">
-                <div>
-                    {dateFormatFn(dateFormat, task.start, optionShowDate)}
-                </div>
-                <div>
-                    {dateFormatFn(dateFormat, task.end, optionShowDate)}
-                </div>
-                {duration ? <div>
-                    {durationFN(unitDuration, task.dauer)}
-                </div> : null}
+                {task[propertyLabel]}
             </div>
         </div>
     );
 }
 TaskItem.propTypes = {
     task: PropTypes.object,
-    propertyLabel: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+    propertyLabel: PropTypes.string,
     setScrollPos: PropTypes.func,
     isSelected: PropTypes.bool,
     handleSelectTask: PropTypes.func,
