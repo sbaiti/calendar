@@ -34,7 +34,7 @@
     },
     {
         "ROWID": "84415cbe-e337-e811-a525-080027d9d3c9",
-        "NAME": "520 Danform SPS IBN (RD)",
+        "NAME": "520 - Liefertermin ",
         "START": "2017-08-06 10:59:59",
         "ENDE": "2017-08-15 11:00:00",
         "DAUER": "0",
@@ -166,7 +166,7 @@
     },
     {
         "ROWID": "87415cbe-e337-e811-a525-080027d9d3c9",
-        "NAME": "520 Danform Liefertermin",
+        "NAME": "520 Danform Programmierung SPS (JCT)",
         "START": "2017-10-22 05:14:00",
         "ENDE": "2017-11-07 20:00:59",
         "DAUER": "0",
@@ -199,7 +199,7 @@
     },
     {
         "ROWID": "8a415cbe-e337-e811-a525-080027d9d3c9",
-        "NAME": "520 Danform kurze Abstimmung (JCT, RD, SBM, LS)",
+        "NAME": "520 Danform Programmierung SPS (JCT)",
         "START": "2017-11-15 11:30:00",
         "ENDE": "2017-11-15 12:15:00",
         "DAUER": "0",
@@ -331,7 +331,7 @@
     },
     {
         "ROWID": "8f415cbe-e337-e811-a525-080027d9d3c9",
-        "NAME": "520 Danform IBN SPS (JCT)",
+        "NAME": "520 MKE Danform",
         "START": "2017-12-14 01:00:00",
         "ENDE": "2017-12-24 01:00:00",
         "DAUER": "0",
@@ -364,7 +364,7 @@
     },
     {
         "ROWID": "8e415cbe-e337-e811-a525-080027d9d3c9",
-        "NAME": "520 MKE Montage",
+        "NAME": "520 MKE Danform",
         "START": "2017-12-25 01:00:00",
         "ENDE": "2017-12-28 01:00:00",
         "DAUER": "0",
@@ -397,7 +397,7 @@
     },
     {
         "ROWID": "97415cbe-e337-e811-a525-080027d9d3c9",
-        "NAME": "520 Danform (OI)",
+        "NAME": "520 MKE Danform",
         "START": "2017-12-27 01:00:00",
         "ENDE": "2017-12-29 01:00:00",
         "DAUER": "",
@@ -430,7 +430,7 @@
     },
     {
         "ROWID": "94415cbe-e337-e811-a525-080027d9d3c9",
-        "NAME": "520 Danform IBN PC offen:1",
+        "NAME": "520 MKE Danform",
         "START": "2017-12-29 01:00:00",
         "ENDE": "2017-12-31 01:00:00",
         "DAUER": "0",

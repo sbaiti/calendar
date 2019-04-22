@@ -6,7 +6,7 @@ import pdplus from "./data/pdplus.json";
 class App extends Component {
     state = {
         viewMode: "Day",
-        dataProvider: pdplus,
+        dataProvider: pdplus.slice(5,20),
         fields: {
             id: "ROWID",
             start: "Start",
@@ -14,7 +14,7 @@ class App extends Component {
             name: "NAME",
         },
         propertyLabel: "name",
-        listWidth: "500px",
+        listWidth: "450px",
         header: "Name of Room",
     };
 
@@ -76,7 +76,6 @@ class App extends Component {
                 <GanttDiagrammComponent
                     listWidth={listWidth}
                     viewMode={viewMode ? viewMode : 'Day'}
-                    propertyLabel={propertyLabel}
                     header={header}
                     dataProvider={dataProvider}
                     fields={fields}

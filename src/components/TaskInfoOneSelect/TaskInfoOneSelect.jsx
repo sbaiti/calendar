@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TaskItem from '../../utile/TaskItem';
 import {
-  TasksInfoHeader
+  TasksInfoHeader,setItem
 } from '../../utile/utile';
 import '../../less/TaskInfoOneSelect.less';
 
@@ -18,7 +18,6 @@ class TaskInfoOneSelect extends React.Component {
   render() {
     const {
       tasks,
-      propertyLabel,
       header,
       setScrollPos,
       scrollTop,
@@ -36,13 +35,12 @@ class TaskInfoOneSelect extends React.Component {
             ref={this.taskInfoRef}
             onScroll={() => debouncedScrollController({ scrollSrc: 'GANTT_LIST' }, this.taskInfoRef)}
           >
-            {tasks.map((task, index) => (
+            {setItem(tasks).map((task, index) => (
               <TaskItem
                 idGantt={idGantt}
                 isSelected={task.id === this.state.selectedItemId}
                 handleSelectTask={() => { this.setState({ selectedItemId: task.id }); }}
                 task={task}
-                propertyLabel={propertyLabel}
                 key={index}
                 setScrollPos={setScrollPos}
                 scrollTop={scrollTop}
@@ -73,7 +71,6 @@ class TaskInfoOneSelect extends React.Component {
 }
 TaskInfoOneSelect.propTypes = {
   tasks: PropTypes.array,
-  propertyLabel: PropTypes.string,
   header: PropTypes.string,
   setScrollPos: PropTypes.func,
   scrollTop: PropTypes.number,

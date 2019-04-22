@@ -1,5 +1,5 @@
 import React from 'react';
-import { filter, reduce, keys, isEmpty, find, findIndex, omit, map } from 'lodash';
+import { filter, reduce, keys, isEmpty, find, findIndex, omit, map, uniqBy } from 'lodash';
 import moment from 'moment';
 import { format, isAfter, isBefore, compareAsc, compareDesc, areRangesOverlapping, differenceInMinutes } from 'date-fns';
 
@@ -539,6 +539,10 @@ function SetClassName(className, isSelected) {
         return className;
 }
 
+function setItem(tasks) {
+    return uniqBy(tasks,'NAME');
+}
+
 export {
     sortByStartDate,
     transfromDataProviderToTasks,
@@ -571,5 +575,6 @@ export {
     durationFN,
     fixHour,
     generate_id,
+    setItem,
     SetClassName
 };

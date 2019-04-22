@@ -7,7 +7,6 @@ import {
 
 function TaskItem({
     task,
-    propertyLabel,
     setScrollPos,
     isSelected,
     handleSelectTask,
@@ -24,21 +23,16 @@ function TaskItem({
             }}
         >
             <div id={task.id} className="task__name">
-                {task[propertyLabel]}
+                {task.name}
             </div>
         </div>
     );
 }
 TaskItem.propTypes = {
     task: PropTypes.object,
-    propertyLabel: PropTypes.string,
     setScrollPos: PropTypes.func,
     isSelected: PropTypes.bool,
     handleSelectTask: PropTypes.func,
-    dateFormat: PropTypes.string,
     idGantt: PropTypes.string,
-    duration: PropTypes.bool,
-    optionShowDate: PropTypes.string,
-    unitDuration: PropTypes.string
 };
 export default TaskItem;

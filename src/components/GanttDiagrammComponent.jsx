@@ -17,6 +17,7 @@ import {
   returnPosScroll,
   selectEventUpdated,
   translateActiveMonth,
+  setItem,
   scrollingLeftTheGantt,
   prepareTaskBeforeRequest,
   dateChangeGroupedTask,
@@ -33,6 +34,7 @@ class GanttDiagrammComponent extends Component {
     this.ganttListRef = React.createRef();
     this.state = {
       tasks: null,
+      list: null,
       headerWidth: null,
       startFilter: null,
       endFilter: null,
@@ -57,8 +59,10 @@ class GanttDiagrammComponent extends Component {
       const tasks = sortByStartDate({
         tasks: transfromDataProviderToTasks(dataProvider, fields)
       });
+      const list = setItem(dataProvider);
       this.setState({
         tasks,
+        list,
         idGantt: generate_id(tasks[0])
       });
     }
@@ -217,9 +221,9 @@ class GanttDiagrammComponent extends Component {
     }
     if (!this.state.tasks) { return null; }
 
-    const { viewMode, propertyLabel, handleClick, listWidth, header } = this.props;
+    const { viewMode, handleClick, listWidth, header } = this.props;
 
-    const { tasks, idGantt, startFilter, endFilter, headerWidth, scrollTop } = this.state;
+    const { tasks, idGantt, startFilter, endFilter, headerWidth, scrollTop, list } = this.state;
 
     const filteredTasks = filterTasksByStartEndDate(tasks, startFilter, endFilter);
 
@@ -243,7 +247,6 @@ class GanttDiagrammComponent extends Component {
           <div className="gantt__list">
             <TaskInfoOneSelect
               tasks={effectiveTasks}
-              propertyLabel={propertyLabel}
               header={header}
               idGantt={idGantt}
               setScrollPos={this.setScrollPos}
@@ -272,9 +275,9 @@ class GanttDiagrammComponent extends Component {
             }
           >
             <FrappeGanttWrapper
+              list={list}
               idGantt={idGantt}
-              effectiveTasks={effectiveTasks}
-              appTasks={effectiveTasks}
+              tasks={effectiveTasks}
               handleClick={handleClick}
               handleDateChange={this.handleDateChange}
               viewMode={viewMode}
@@ -292,7 +295,6 @@ GanttDiagrammComponent.propTypes = {
   handleClick: PropTypes.func,
   executeFunction: PropTypes.func,
   listWidth: PropTypes.string,
-  propertyLabel: PropTypes.string,
   header: PropTypes.string
 };
 export default GanttDiagrammComponent;
