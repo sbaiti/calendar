@@ -23,7 +23,7 @@ function TaskItem({
             }}
         >
             <div id={task.id} className="task__name">
-                {task.name}
+                <i className="fa fa-bed" aria-hidden="true" /> {task.name}
             </div>
         </div>
     );

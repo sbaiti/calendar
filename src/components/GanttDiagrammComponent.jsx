@@ -20,10 +20,8 @@ import {
   setItem,
   scrollingLeftTheGantt,
   prepareTaskBeforeRequest,
-  dateChangeGroupedTask,
   getPosMonth,
   focusMonthTaskActive,
-  fixHour,
   generate_id
 } from '../utile/utile';
 
@@ -105,31 +103,21 @@ class GanttDiagrammComponent extends Component {
 
   handleDateChange(task, start, end) {
     moment.locale();
-    const { tasks, BlockedTimeFrame, tasksItems, groupingAttribute } = this.state;
-    const { viewMode } = this.props;
+    const { tasks } = this.state;
     const scrollPos = getScrollLeftPos(this.scrollableContainerRef);
     const newDateStart = moment(start).locale('L').toISOString();
     const newDateEnd = moment(end).locale('L').toISOString();
     const taskChangedIndex = findIndex(tasks, { id: task.id });
-    const timeStart = viewMode === 'Hour' ? newDateStart.substring(11) : (task.start).substring(11);
-    const timeEnd = viewMode === 'Hour' ? fixHour(newDateEnd).substring(11) : (task.end).substring(11);
+    const timeStart = (task.start).substring(11);
+    const timeEnd = (task.end).substring(11);
     const trueStart = newDateStart.substring(0, 11) + timeStart;
     const trueEnd = newDateEnd.substring(0, 11) + timeEnd;
     let taskrequest = { ...task, start: trueStart, end: trueEnd };
-    if (groupingAttribute) {
-      const taskMultiSelectIndex = findIndex(BlockedTimeFrame, { id: task.id });
-      const taskMultiSelectIndexTasks = findIndex(tasksItems, { id: task.id });
-      const newTasks = tasksItems;
-      newTasks[taskMultiSelectIndexTasks] = taskrequest;
-      this.setState(dateChangeGroupedTask(this.state, task, trueStart, trueEnd, taskMultiSelectIndex, newTasks, scrollPos, taskChangedIndex),
-        () => (this.scrollableContainerRef.current.scrollLeft = scrollPos)
-      );
-    } else {
-      this.setState(
-        dateChange(this.state, task, trueStart, trueEnd, taskChangedIndex),
-        () => (this.scrollableContainerRef.current.scrollLeft = scrollPos)
-      );
-    }
+    this.setState(
+      dateChange(this.state, task, trueStart, trueEnd, taskChangedIndex),
+      () => (this.scrollableContainerRef.current.scrollLeft = scrollPos)
+    );
+
     const finalTaskResquest = prepareTaskBeforeRequest(this.props.fields, task, taskrequest, trueStart, trueEnd);
     selectEventUpdated(task);
     this.props.executeFunction(finalTaskResquest);
