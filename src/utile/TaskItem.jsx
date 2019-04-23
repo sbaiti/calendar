@@ -2,22 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
     SetClassName,
-    handleFacusTaskSelected,
-    dateFormatFn,
-    durationFN
+    handleFacusTaskSelected
 } from './utile';
 
 function TaskItem({
     task,
-    propertyLabel,
     setScrollPos,
     isSelected,
     handleSelectTask,
-    dateFormat,
-    idGantt,
-    optionShowDate,
-    duration,
-    unitDuration
+    idGantt
 }) {
     return (
         <div
@@ -30,32 +23,16 @@ function TaskItem({
             }}
         >
             <div id={task.id} className="task__name">
-                {propertyLabel ? task[propertyLabel[1]] : ''}
-            </div>
-            <div className="task__times">
-                <div>
-                    {dateFormatFn(dateFormat, task.start, optionShowDate)}
-                </div>
-                <div>
-                    {dateFormatFn(dateFormat, task.end, optionShowDate)}
-                </div>
-                {duration ? <div>
-                    {durationFN(unitDuration, task.dauer)}
-                </div> : null}
+                <i className="fa fa-bed" aria-hidden="true" /> {task.name}
             </div>
         </div>
     );
 }
 TaskItem.propTypes = {
     task: PropTypes.object,
-    propertyLabel: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     setScrollPos: PropTypes.func,
     isSelected: PropTypes.bool,
     handleSelectTask: PropTypes.func,
-    dateFormat: PropTypes.string,
     idGantt: PropTypes.string,
-    duration: PropTypes.bool,
-    optionShowDate: PropTypes.string,
-    unitDuration: PropTypes.string
 };
 export default TaskItem;

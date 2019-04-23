@@ -6,30 +6,16 @@ import pdplus from "./data/pdplus.json";
 class App extends Component {
     state = {
         viewMode: "Day",
-        dateData: {
-            optionShowDate: "date time",
-            duration: true,
-            unitDuration: 'd'
-        },
-        dataProvider: pdplus,
+        dataProvider: pdplus.slice(5,20),
         fields: {
             id: "ROWID",
             start: "Start",
             end: "Ende",
             name: "NAME",
-            labelBar: ["BEnUTzER", "NAxwME"],
-            propertyLabel: "naMe",
-            labels: { start: "Start", end: "Ende", dauer: "Dauer" }
         },
-        listWidth: "600px",
-        glyphicon: 'resize-small',
-        groupingAttribute: ["BENUTzsER", "stafftus"],
-        dateFormat: "en",
-        service: {
-            name: "/API/ERP/Organization/Event",
-            itemName: "Event",
-            keys: ["ROWID"]
-        }
+        propertyLabel: "name",
+        listWidth: "450px",
+        header: "Name of Room",
     };
 
     handleChangeViewMode = value =>
@@ -71,11 +57,8 @@ class App extends Component {
             fields,
             viewMode,
             listWidth,
-            propertyLabel,
-            groupingAttribute,
-            dateFormat,
-            dateData,
-            glyphicon
+            header,
+            propertyLabel
         } = this.state;
 
         const { handleClick, handleEditTaskLabel, handleChangeViewMode } = this;
@@ -91,16 +74,11 @@ class App extends Component {
             <div className="gantt">
                 <GanttController {...controllerProps} />
                 <GanttDiagrammComponent
-                    listWidth={(listWidth >= '600px') ? listWidth : '600px'}
+                    listWidth={listWidth}
                     viewMode={viewMode ? viewMode : 'Day'}
+                    header={header}
                     dataProvider={dataProvider}
-                    glyphicon={glyphicon ? glyphicon : ''}
                     fields={fields}
-                    duration={(dateData && dateData.duration) ? dateData.duration : false}
-                    unitDuration={(dateData && dateData.unitDuration) ? dateData.unitDuration : ''}
-                    optionShowDate={(dateData && dateData.optionShowDate) ? dateData.optionShowDate : 'date'}
-                    groupingAttribute={groupingAttribute}
-                    dateFormat={dateFormat}
                     handleClick={handleClick}
                     executeFunction={this.executeFunction}
                 />

@@ -8,14 +8,12 @@ import Bar from './bar';
 import Popup from './popup';
 import moment from 'moment';
 import { find } from 'lodash';
-import { isAfter } from 'date-fns';
-import { generate_id } from '../utile/utile';
 
 
 export default class Gantt {
-    constructor(wrapper, tasks, allTasks, options, idGantt, LabelBar, groupingAttribute, dateFormat, effectiveTasks) {
+    constructor(wrapper, tasks, list, options, idGantt) {
         this.setup_wrapper(wrapper);
-        this.setup_options(options, allTasks, LabelBar, groupingAttribute, dateFormat, idGantt, effectiveTasks);
+        this.setup_options(options, tasks, list, idGantt);
         this.setup_tasks(tasks);
         // initialize with default view mode
         this.change_view_mode();
@@ -48,104 +46,46 @@ export default class Gantt {
         this.$svg.parentElement.appendChild(this.popup_wrapper);
     }
 
-    setup_options(options, allTasks, LabelBar, groupingAttribute, dateFormat, idGantt, effectiveTasks) {
+    setup_options(options, tasks, list, idGantt) {
         const default_options = {
             header_height: 50,
             column_width: 30,
             step: 24,
             view_modes: ['Hour', 'Quarter Day', 'Half Day', 'Day', 'Week', 'Month', 'Year'],
-            bar_height: 20,
+            bar_height: 24,
             bar_corner_radius: 3,
             arrow_curve: 5,
             padding: 18,
             view_mode: 'Day',
             custom_popup_html: null,
-            allTasks: allTasks,
-            LabelBar: LabelBar,
-            groupingAttribute: groupingAttribute,
-            dateFormat: dateFormat,
+            tasks,
+            list,
             idGantt: idGantt,
-            effectiveTasks: effectiveTasks
         };
         this.options = Object.assign({}, default_options, options);
     }
 
     setup_tasks(tasks) {
-        let error = false;
-        this.tasks = tasks.map((task, i) => {
-            // convert to Date objects
-            if (isAfter(task.start, task.end)) {
-                error = true;
-                let startt = task.start;
-                task.start = task.end;
-                task.end = startt;
-            }
-
-            task._start = moment(task.start).locale(this.options.dateFormat).toDate();
-            task._end = moment(task.end).locale(this.options.dateFormat).toDate();
-
-            task._index = i;
-            // dependencies
-            // if (typeof task.dependencies === 'string' || !task.dependencies) {
-            //     let deps = [];
-            //     if (task.dependencies) {
-            //         deps = task.dependencies
-            //             .split(',')
-            //             .map(d => d.trim())
-            //             .filter(d => d);
-            //     }
-            //     task.dependencies = deps;
-            // }
-
-            // // uids
-            // if (!task.id) {
-            //     task.id = generate_id(task);
-            // }
-
-            return task;
-        });
-
-        // this.setup_dependencies();
-        if (error) {
-            console.error('START date > END date please verify your DATES !');
+        let ind = 0;
+        moment.locale();
+        this.tasks = [];
+        for (let i = 0; i < tasks.length; i++) {
+            let task = tasks[i];
+            task._start = moment(task.start).toDate();
+            task._end = moment(task.end).toDate();
+            task._index = ind;
+            if ((i < tasks.length - 1 && (tasks[i].name !== tasks[i + 1].name)))
+                ind++;
+            this.tasks.push(task);
         }
     }
-    setup_task(task) {
-        task._start = moment(task.start).locale(this.options.dateFormat).toDate();
-        task._end = moment(task.end).locale(this.options.dateFormat).toDate();
-        if (!task.id) {
-            task.id = generate_id(task);
-        }
-        return task;
-    }
 
-    // setup_dependencies() {
-    //   this.dependency_map = {};
-    //   for (let t of this.tasks) {
-    //     for (let d of t.dependencies) {
-    //       this.dependency_map[d] = this.dependency_map[d] || [];
-    //       this.dependency_map[d].push(t.id);
-    //     }
-    //   }
-    // }
-
-    refresh(tasks, options, newtasksblocked, dateFormat, idGantt, effectiveTasks, LabelBar, groupingAttribute, BooleanItem, fn) {
-        if (effectiveTasks.length >= 1) {
+    refresh(tasks) {
+        if (tasks.length >= 1) {
             this.setup_tasks(tasks);
         }
         else {
             this.hide_popup();
-        }
-        //this.change_view_mode();
-        this.setup_options(options, newtasksblocked, LabelBar, groupingAttribute, dateFormat, idGantt, effectiveTasks);
-        if (fn && fn(BooleanItem)) {
-            this.hide_popup();
-        }
-        if (this.popup && fn) {
-            const pos = BooleanItem.filter(elem => elem === true);
-            if (pos.length > 1) {
-                this.hide_popup();
-            }
         }
     }
 
@@ -159,13 +99,12 @@ export default class Gantt {
 
     update_view_scale(view_mode) {
         this.options.view_mode = view_mode;
-
         if (view_mode === 'Hour') {
             this.options.step = 24 / 24;
             this.options.column_width = 32;
         } else if (view_mode === 'Day') {
             this.options.step = 24;
-            this.options.column_width = 32;
+            this.options.column_width = 40;
         } else if (view_mode === 'Half Day') {
             this.options.step = 24 / 2;
             this.options.column_width = 32;
@@ -186,33 +125,35 @@ export default class Gantt {
     }
 
     setup_dates() {
-        if (this.options.effectiveTasks.length >= 1) {
+        if (this.options.tasks.length >= 1) {
             this.setup_gantt_dates();
             this.setup_date_values();
         }
     }
 
     setup_gantt_dates() {
+        moment.locale();
         this.gantt_start = this.tasks[0]._start;
         this.gantt_end = this.tasks[this.tasks.length - 1]._end;
         // add date padding on both sides
         if (this.view_is(['Hour', 'Quarter Day', 'Half Day'])) {
-            this.gantt_start = moment(this.gantt_start).subtract(5, 'days').locale(this.options.dateFormat).toDate();
-            this.gantt_end = moment(this.gantt_end).add(5, 'days').locale(this.options.dateFormat).toDate();
+            this.gantt_start = moment(this.gantt_start).subtract(5, 'days').toDate();
+            this.gantt_end = moment(this.gantt_end).add(5, 'days').toDate();
         } else if (this.view_is('Month')) {
-            this.gantt_start = moment(this.gantt_start).subtract(2, 'M').locale(this.options.dateFormat).toDate();
-            this.gantt_end = moment(this.gantt_end).add(4, 'M').locale(this.options.dateFormat).toDate();
+            this.gantt_start = moment(this.gantt_start).subtract(2, 'M').toDate();
+            this.gantt_end = moment(this.gantt_end).add(4, 'M').toDate();
         } else if (this.view_is('Year')) {
-            this.gantt_start = moment(this.gantt_start).subtract(5, 'Y').locale(this.options.dateFormat).toDate();
-            this.gantt_end = moment(this.gantt_end).add(5, 'Y').locale(this.options.dateFormat).toDate();
+            this.gantt_start = moment(this.gantt_start).subtract(5, 'Y').toDate();
+            this.gantt_end = moment(this.gantt_end).add(5, 'Y').toDate();
         }
         else {
-            this.gantt_start = moment(this.gantt_start).subtract(30, 'days').locale(this.options.dateFormat).toDate();
-            this.gantt_end = moment(this.gantt_end).add(30, 'days').locale(this.options.dateFormat).toDate();
+            this.gantt_start = moment(this.gantt_start).subtract(4, 'days').toDate();
+            this.gantt_end = moment(this.gantt_end).add(30, 'days').toDate();
         }
     }
 
     setup_date_values() {
+        moment.locale();
         this.dates = [];
         let cur_date = null;
 
@@ -221,19 +162,19 @@ export default class Gantt {
                 cur_date = this.gantt_start;
             } else
                 if (this.view_is('Year')) {
-                    cur_date = moment(cur_date).add(1, 'Y').locale(this.options.dateFormat).toDate();
+                    cur_date = moment(cur_date).add(1, 'Y').toDate();
                 }
                 else {
                     cur_date = this.view_is('Month') ?
-                        moment(cur_date).add(1, 'M').locale(this.options.dateFormat).toDate() :
-                        moment(cur_date).add(this.options.step, 'hours').locale(this.options.dateFormat).toDate();
+                        moment(cur_date).add(1, 'M').toDate() :
+                        moment(cur_date).add(this.options.step, 'hours').toDate();
                 }
             this.dates.push(cur_date);
         }
     }
 
     bind_events() {
-        if (this.options.effectiveTasks.length >= 1) {
+        if (this.options.tasks.length >= 1) {
             this.bind_grid_click();
             this.bind_bar_events();
         }
@@ -242,7 +183,7 @@ export default class Gantt {
     render() {
         this.clear();
         this.setup_layers();
-        if (this.options.effectiveTasks.length >= 1) {
+        if (this.options.tasks.length >= 1) {
             this.make_grid();
             this.make_dates();
             this.make_bars();
@@ -296,7 +237,7 @@ export default class Gantt {
         const grid_height =
             this.options.header_height +
             this.options.padding +
-            (this.options.bar_height + this.options.padding) * this.tasks.length;
+            (this.options.bar_height + this.options.padding) * this.options.list.length;
 
         createSVG('rect', {
             x: 0,
@@ -326,7 +267,7 @@ export default class Gantt {
 
         let row_y = 0 + this.options.padding / 2;
 
-        for (let task of this.tasks) {
+        for (let task of this.options.list) {
             createSVG('rect', {
                 id: task.id,
                 x: 0,
@@ -365,18 +306,19 @@ export default class Gantt {
     // }
 
     make_grid_ticks() {
+        moment.locale();
         let tick_x = 0;
         let tick_y = this.options.padding / 2;
         let tick_height =
-            (this.options.bar_height + this.options.padding) * this.tasks.length;
+            (this.options.bar_height + this.options.padding) * this.options.list.length;
 
         for (let date of this.dates) {
             let tick_class = 'tick';
             // thick tick for monday
-            if (this.view_is('Day') && moment(date).locale(this.options.dateFormat).format('DD') === '01') {
+            if (this.view_is('Day') && moment(date).format('DD') === '01') {
                 tick_class += ' thick';
             }
-            if (this.view_is('Hour') && moment(date).locale(this.options.dateFormat).format('HH') === '00') {
+            if (this.view_is('Hour') && moment(date).format('HH') === '00') {
                 tick_class += ' thick';
             }
             // thick tick for first week
@@ -483,8 +425,9 @@ export default class Gantt {
     }
 
     get_date_info(date, last_date, i) {
+        moment.locale();
         if (!last_date) {
-            last_date = moment(date).add(1, 'Y').locale(this.options.dateFormat).toDate();
+            last_date = moment(date).add(1, 'Y').toDate();
         }
         const date_text = {
             Hour_lower: moment(date).format('HH'),
@@ -493,26 +436,26 @@ export default class Gantt {
             Day_lower: (moment(date).format('DD') !== moment(last_date).format('DD')) ?
                 moment(date).format('DD') : '',
             Week_lower: moment(date).format('MM') !== moment(last_date).format('MM') ?
-                (moment(date).locale(this.options.dateFormat).format('DD MMMM')) : (moment(date).locale(this.options.dateFormat).format('DD')),
-            Month_lower: (moment(date).locale(this.options.dateFormat).format('MMMM YYYY')),
+                (moment(date).format('DD MMMM')) : (moment(date).format('DD')),
+            Month_lower: (moment(date).format('MMMM YYYY')),
             Hour_upper: (moment(date).format('DD') !== moment(last_date).format('DD')) ?
                 moment(date).format('MM') !== moment(last_date).format('MM') ?
-                    (moment(date).locale(this.options.dateFormat).format('DD MMMM')) :
-                    (moment(date).locale(this.options.dateFormat).format('DD MMMM')) +
+                    (moment(date).format('DD MMMM')) :
+                    (moment(date).format('DD MMMM')) +
                     ' ' +
-                    (moment(date).locale(this.options.dateFormat).format('YYYY')) : '',
+                    (moment(date).format('YYYY')) : '',
             'Quarter Day_upper': (moment(date).format('DD') !== moment(last_date).format('DD')) ?
-                (moment(date).locale(this.options.dateFormat).format('DD MMMM')) +
+                (moment(date).format('DD MMMM')) +
                 ' ' +
-                (moment(date).locale(this.options.dateFormat).format('YYYY')) : '',
+                (moment(date).format('YYYY')) : '',
             'Half Day_upper':
                 (moment(date).format('MM') === moment(last_date).format('MM') && i % 4 === 0) ?
-                    (moment(date).locale(this.options.dateFormat).format('DD MMMM YYYY')) : '',
+                    (moment(date).format('DD MMMM YYYY')) : '',
             Day_upper: (moment(date).format('MMMM') !== moment(last_date).format('MMMM') || (i == 2 && Number(moment(date).format('DD')) < 28)) ?
-                (moment(date).locale(this.options.dateFormat).format('MMMM YYYY')) : '',
+                (moment(date).format('MMMM YYYY')) : '',
             Week_upper: moment(date).format('MM') !== moment(last_date).format('MM') ?
-                (moment(date).locale(this.options.dateFormat).format('MMMM YYYY')) : '',
-            Year_lower: (moment(date).locale(this.options.dateFormat).format('YYYY'))
+                (moment(date).format('MMMM YYYY')) : '',
+            Year_lower: (moment(date).format('YYYY'))
             // Year_upper:
             //     date.getFullYear() !== last_date.getFullYear()
             //         ? date_utils.format(date, 'YYYY', this.options.language)
@@ -556,28 +499,12 @@ export default class Gantt {
     make_bars() {
         this.bars = [];
         let test = this.tasks;
-        let test2 = this.options.allTasks;
         for (let j = 0; j <= test.length - 1; j++) {
-            if (test[j].name === 'Blocked') {
-                for (let i = 0; i <= test2.length - 1; i++) {
-                    if (test2[i].global === test[j].global || test2[i][this.options.groupingAttribute[0]] === test[j].global) {
-                        let task = this.setup_task({
-                            start: test2[i].start,
-                            end: test2[i].end,
-                            _index: test[j]._index,
-                            name: '',
-                            global: test2[i].global
-                        });
-                        let bar = new Bar(this, task);
-                        this.layers.bar.appendChild(bar.group);
-                        this.bars = [...this.bars, bar];
-                    }
-                }
-            } else {
-                let bar = new Bar(this, test[j]);
-                this.layers.bar.appendChild(bar.group);
-                this.bars = [...this.bars, bar];
-            }
+
+            let bar = new Bar(this, test[j]);
+            this.layers.bar.appendChild(bar.group);
+            this.bars = [...this.bars, bar];
+
         }
         return this.bars;
     }

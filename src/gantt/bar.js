@@ -24,15 +24,11 @@ export default class Bar {
         this.prepare_helpers();
     }
 
-    prepare_values(gantt) {
+    prepare_values() {
+        moment.locale();
         this.invalid = this.task.invalid;
         this.height = this.gantt.options.bar_height;
-        if (this.gantt.options.view_mode === 'Month')
-            this.x = this.compute_x() - 40;
-        else if (this.gantt.options.view_mode === 'Day')
-            this.x = this.compute_x() + 20;
-        else
-            this.x = this.compute_x();
+        this.x = this.compute_x() + 16;
         this.y = this.compute_y();
         this.corner_radius = this.gantt.options.bar_corner_radius;
         if (this.gantt.options.view_mode === 'Hour') {
@@ -44,95 +40,7 @@ export default class Bar {
                 date_utils.diff(this.task._end, this.task._start, 'hour') /
                 this.gantt.options.step;
         }
-        if (this.gantt.options.view_mode === 'Hour') {
-            let minuteStart = Number(moment(this.task._start).get('minute'));
-            let minuteEnd = Number(moment(this.task._end).get('minute'));
-            if (minuteStart > 9 && minuteStart <= 15) {
-                if (minuteEnd > 9 && minuteEnd <= 15)
-                    this.width = this.gantt.options.column_width * this.duration - 32;
-                else if (minuteEnd > 15 && minuteEnd <= 30)
-                    this.width = this.gantt.options.column_width * this.duration - 24;
-                else if (minuteEnd > 30 && minuteEnd <= 45)
-                    this.width = this.gantt.options.column_width * this.duration - 16;
-                else if (minuteEnd > 45)
-                    this.width = this.gantt.options.column_width * this.duration - 8;
-                else if (minuteEnd == 0)
-                    this.width = this.gantt.options.column_width * this.duration - 8;
-                else if (minuteEnd > 0 && minuteEnd <= 9)
-                    this.width = this.gantt.options.column_width * this.duration;
-            }
-            else if (minuteStart > 15 && minuteStart <= 30) {
-                if (minuteEnd > 9 && minuteEnd <= 15)
-                    this.width = this.gantt.options.column_width * this.duration - 8;
-                else if (minuteEnd > 15 && minuteEnd <= 30)
-                    this.width = this.gantt.options.column_width * this.duration - 32;
-                else if (minuteEnd > 30 && minuteEnd <= 45)
-                    this.width = this.gantt.options.column_width * this.duration - 24;
-                else if (minuteEnd > 45)
-                    this.width = this.gantt.options.column_width * this.duration - 16;
-                else if (minuteEnd == 0)
-                    this.width = this.gantt.options.column_width * this.duration - 16;
-                else if (minuteEnd > 0 && minuteEnd <= 9)
-                    this.width = this.gantt.options.column_width * this.duration - 8;
-            }
-            else if (minuteStart > 30 && minuteStart <= 45) {
-                if (minuteEnd > 9 && minuteEnd <= 15)
-                    this.width = this.gantt.options.column_width * this.duration - 16;
-                else if (minuteEnd > 15 && minuteEnd <= 30)
-                    this.width = this.gantt.options.column_width * this.duration - 8;
-                else if (minuteEnd > 30 && minuteEnd <= 45)
-                    this.width = this.gantt.options.column_width * this.duration - 32;
-                else if (minuteEnd > 45)
-                    this.width = this.gantt.options.column_width * this.duration - 24;
-                else if (minuteEnd == 0)
-                    this.width = this.gantt.options.column_width * this.duration - 24;
-                else if (minuteEnd > 0 && minuteEnd <= 9)
-                    this.width = this.gantt.options.column_width * this.duration - 16;
-            }
-            else if (minuteStart > 45) {
-                if (minuteEnd > 9 && minuteEnd <= 15)
-                    this.width = this.gantt.options.column_width * this.duration - 24;
-                else if (minuteEnd > 15 && minuteEnd <= 30)
-                    this.width = this.gantt.options.column_width * this.duration - 16;
-                else if (minuteEnd > 30 && minuteEnd <= 45)
-                    this.width = this.gantt.options.column_width * this.duration - 8;
-                else if (minuteEnd > 45)
-                    this.width = this.gantt.options.column_width * this.duration - 32;
-                else if (minuteEnd == 0)
-                    this.width = this.gantt.options.column_width * this.duration - 32;
-                else if (minuteEnd > 0 && minuteEnd <= 9)
-                    this.width = this.gantt.options.column_width * this.duration - 24;
-            }
-            else if (minuteStart > 0 && minuteStart <= 9) {
-                if (minuteEnd > 9 && minuteEnd <= 15)
-                    this.width = this.gantt.options.column_width * this.duration - 32;
-                else if (minuteEnd > 15 && minuteEnd <= 30)
-                    this.width = this.gantt.options.column_width * this.duration - 24;
-                else if (minuteEnd > 30 && minuteEnd <= 45)
-                    this.width = this.gantt.options.column_width * this.duration - 16;
-                else if (minuteEnd > 45)
-                    this.width = this.gantt.options.column_width * this.duration - 8;
-                else if (minuteEnd == 0)
-                    this.width = this.gantt.options.column_width * this.duration - 8;
-                else if (minuteEnd > 0 && minuteEnd <= 9)
-                    this.width = this.gantt.options.column_width * this.duration - 32;
-            }
-            else if (minuteStart == 0) {
-                if (minuteEnd > 9 && minuteEnd <= 15)
-                    this.width = this.gantt.options.column_width * this.duration - 24;
-                else if (minuteEnd > 15 && minuteEnd <= 30)
-                    this.width = this.gantt.options.column_width * this.duration - 16;
-                else if (minuteEnd > 30 && minuteEnd <= 45)
-                    this.width = this.gantt.options.column_width * this.duration - 8;
-                else if (minuteEnd > 45)
-                    this.width = this.gantt.options.column_width * this.duration;
-                else if (minuteEnd == 0)
-                    this.width = this.gantt.options.column_width * this.duration - 32;
-                else if (minuteEnd > 0 && minuteEnd <= 9)
-                    this.width = this.gantt.options.column_width * this.duration - 24;
-            }
-        }
-        else { this.width = this.gantt.options.column_width * this.duration; }
+        this.width = this.gantt.options.column_width * this.duration;
         this.progress_width =
             this.gantt.options.column_width *
             this.duration *
@@ -142,8 +50,8 @@ export default class Bar {
             'data-id': this.task.id,
             id: this.gantt.options.idGantt,
             name: this.task.name,
-            monthActiveStart: moment(this.task.start).locale(gantt.options.dateFormat).format('MMMM YYYY'),
-            monthActiveEnd: moment(this.task.end).locale(gantt.options.dateFormat).format('MMMM YYYY')
+            monthActiveStart: moment(this.task.start).format('MMMM YYYY'),
+            monthActiveEnd: moment(this.task.end).format('MMMM YYYY')
         });
         this.bar_group = createSVG('g', {
             class: 'bar-group',
@@ -227,7 +135,7 @@ export default class Bar {
                 height: this.height,
                 rx: this.corner_radius,
                 ry: this.corner_radius,
-                style: "fill: #3db9d3",
+                style: "fill: gold",
                 class: 'bar',
                 append_to: this.bar_group
             });
@@ -258,7 +166,7 @@ export default class Bar {
             createSVG('text', {
                 x: this.x + this.width / 2,
                 y: this.y + this.height / 2,
-                innerHTML: this.gantt.options.LabelBar ? this.makeLabel(this.gantt.options.LabelBar, this.task) : '',
+                innerHTML: this.task.name,
                 class: 'bar-label',
                 append_to: this.bar_group
             });
@@ -370,33 +278,15 @@ export default class Bar {
         let dauer;
         let mode = this.gantt.options.view_mode;
         moment.locale(dateFormat);
-        if (mode == 'Hour') {
-            start_date = moment(this.task._start).format('LLL');
-            end_date = moment(this.task._end).format('LLL');
-            dauer = Math.round(Number(this.task.dauer / 60).toFixed(0));
-        } else if (mode == 'Month') {
-            start_date = moment(this.task._start).format('MMMM');
-            end_date = moment(this.task._end).format('MMMM');
-            dauer = Math.round(Number(this.task.dauer / 43200).toFixed(0));
-        }
-        else if (mode == 'Day') {
-            start_date = moment(this.task._start).format('DD MMMM');
-            end_date = moment(this.task._end).format('DD MMMM');
-            dauer = Math.round(Number(this.task.dauer / 1440).toFixed(0));
-        }
-        else {
-            start_date = moment(this.task._start).format('MMMM DD');
-            moment(this.task._end).format('MMMM DD');
-            end_date = moment(this.task._end).format('MMMM DD');
-            dauer = Math.round(Number(this.task.dauer / 1440).toFixed(0));
-            mode = 'Day';
-        }
+        start_date = moment(this.task._start).format('DD MMMM');
+        end_date = moment(this.task._end).format('DD MMMM');
+        dauer = Math.round(Number(this.task.dauer / 1440).toFixed(0));
 
         const subtitle = start_date + ' - ' + end_date;
 
         this.gantt.show_popup({
             target_element: this.$bar,
-            title: this.gantt.options.LabelBar ? this.makeLabel(this.gantt.options.LabelBar, this.task) : '',
+            title: this.task.name,
             subtitle: subtitle,
             dauer: dauer + ' ' + mode,
             task: this.task
@@ -436,6 +326,7 @@ export default class Bar {
     }
 
     date_changed() {
+        moment.locale();
         let changed = false;
         const {
             new_start_date,
@@ -457,7 +348,7 @@ export default class Bar {
         this.gantt.trigger_event('date_change', [
             this.task,
             new_start_date,
-            moment(new_end_date).subtract(1, 'seconds').locale(this.gantt.options.dateFormat).toDate()
+            moment(new_end_date).subtract(1, 'seconds').toDate()
         ]);
     }
 
@@ -475,19 +366,19 @@ export default class Bar {
     compute_start_end_date() {
         const bar = this.$bar;
         const x_in_units = bar.getX() / this.gantt.options.column_width;
-        const new_start_date = moment(this.gantt.gantt_start).add((x_in_units + 1) * this.gantt.options.step, 'hours').locale(this.gantt.options.dateFormat).toDate();
+        const new_start_date = moment(this.gantt.gantt_start).add((x_in_units + 1) * this.gantt.options.step, 'hours').toDate();
 
 
-
+        moment.locale();
         const width_in_units = bar.getWidth() / this.gantt.options.column_width;
         let new_end_date;
         const start = new_start_date;
         if (start.getHours() === 1 && this.gantt.options.view_mode !== 'Hour') {
             start.setHours(9, 0, 0, 0);
-            new_end_date = moment(start).add((width_in_units - 1) * this.gantt.options.step, 'hours').locale(this.gantt.options.dateFormat).toDate();
+            new_end_date = moment(start).add((width_in_units - 1) * this.gantt.options.step, 'hours').toDate();
         }
         else {
-            new_end_date = moment(new_start_date).add((width_in_units - 1) * this.gantt.options.step, 'hours').locale(this.gantt.options.dateFormat).toDate();
+            new_end_date = moment(new_start_date).add((width_in_units - 1) * this.gantt.options.step, 'hours').toDate();
         }
 
         if (this.gantt.options.view_mode !== 'Hour') {
@@ -513,21 +404,9 @@ export default class Bar {
         const task_start = this.task._start;
         const gantt_start = this.gantt.gantt_start;
         let x;
-        if (this.gantt.view_is('Hour')) {
-            const diff = date_utils.diffHour(task_start, gantt_start, 'hour');
-            x = (diff / step) * column_width;
-        }
-        else if (this.gantt.view_is('Month')) {
-            const diff = date_utils.diff(task_start, gantt_start, 'day');
-            x = (diff * column_width) / 30;
-        }
-        else {
-            const diff = date_utils.diff(task_start, gantt_start, 'hour');
-            x = (diff / step) * column_width;
-        }
-
-        if (this.gantt.view_is('Hour')) return x + 16.5;
-        else return x;
+        const diff = date_utils.diff(task_start, gantt_start, 'hour');
+        x = (diff / step) * column_width;
+        return x;
     }
 
     compute_y() {
