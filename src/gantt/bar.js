@@ -28,7 +28,7 @@ export default class Bar {
         moment.locale();
         this.invalid = this.task.invalid;
         this.height = this.gantt.options.bar_height;
-        this.x = this.compute_x() + 16;
+        this.x = this.compute_x() + 20;
         this.y = this.compute_y();
         this.corner_radius = this.gantt.options.bar_corner_radius;
         if (this.gantt.options.view_mode === 'Hour') {
